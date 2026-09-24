@@ -4,3 +4,4 @@ cache/
 *.raw
 *.tif
 __pycache__/
+vendor/

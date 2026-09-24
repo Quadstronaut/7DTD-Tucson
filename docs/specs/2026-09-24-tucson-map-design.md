@@ -140,3 +140,14 @@ All map to native V3 **Sandbox Options** (descriptions verified in `Localization
   `%APPDATA%\7DaysToDie\logs` + the new GeneratedWorlds folder to verify mod ran, heights, orientation.
 - Mod is a DLL; if it doesn't load, check whether the game must be launched without EAC (unverified).
 - **Remove the mod folder (or its heightmap.png) after the spike** or every future RWG world becomes Tucson.
+
+### Spike result — PASSED 2026-09-24
+
+- User generated **"Tisuviro County"** (10240, seed name "Claude Code"). Map_info GameVersion **V.3.20.10** (game has updated past 3.0.259).
+- DLL mod **requires launching without EAC** (verified; log: "Mod contains custom code, AntiCheat needs to be disabled").
+- `dtm.raw` vs source: |diff| ≤ 0.87 block everywhere (constant ~-0.8 offset, 256 vs 257 scaling) → import is exact; orientation correct.
+- `biomes.png` 1280² (1/8), only our 3 colors; ~99% of 32-block cells uniform → biome detail is fine (log's "40x40 logical cells" is not the output resolution).
+- 5794 POI plots rejected for terrain; 1199 POI footprints kept → full build must flatten landmark zones (DM AFB is flat IRL anyway).
+- RWG roads/cities are wrong as expected → handled by real-road carving + hand pass.
+- Mod removed from game `Mods/` → moved to `vendor/CustomHeightMapImporter/` (gitignored; third-party DLL). Reinstall by copying back when building.
+- Spike output world is not saved to repo (lives in `%APPDATA%\7DaysToDie\GeneratedWorlds\Tisuviro County`).
