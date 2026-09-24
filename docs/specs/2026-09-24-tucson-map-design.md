@@ -151,3 +151,61 @@ All map to native V3 **Sandbox Options** (descriptions verified in `Localization
 - RWG roads/cities are wrong as expected → handled by real-road carving + hand pass.
 - Mod removed from game `Mods/` → moved to `vendor/CustomHeightMapImporter/` (gitignored; third-party DLL). Reinstall by copying back when building.
 - Spike output world is not saved to repo (lives in `%APPDATA%\7DaysToDie\GeneratedWorlds\Tisuviro County`).
+
+## 12. TODO (non-map)
+
+- [ ] **Make repo public** (`gh repo edit Quadstronaut/7DTD-Tucson --visibility public --accept-visibility-change-consequences`).
+      Before flipping: scrub personal paths if unwanted (spec cites `C:\Users\Quadstronaut\...`); never commit vendor/ (third-party DLL).
+- [ ] **Bedazzled README.md** (use the `bedazzle` skill; match the user's other repos).
+- [ ] **Discord announcement channel** like the others. Mechanism (verified): QuadstroNot bot repo-digest —
+      `G:\Documents\GIT\BUSINESS-pursuits\QuadstroNot\config\github_channels.json` maps repo globs → channel names;
+      the `/github-channels` project skill (run inside QuadstroNot) diffs config vs Discord and creates the channel via the admin MCP.
+      Add `{ "name": "7dtd-tucson", "repos": ["7DTD-Tucson"] }` (channel name = user's call), then run `/github-channels` there.
+      QuadstroNot may have its own agents committing — coordinate before editing.
+
+## 13. Build design (proposed 2026-09-24, awaiting approval)
+
+### 13.1 Key verified facts driving the design
+- RWG `Towns` and `Wilderness` each accept **None / Few / Default / Many** (`xuiWorldGeneration*` localization; tooltip "Enables or Disables Town Generation").
+- A generated `prefabs.xml` lists **everything explicitly**: 150×150 `rwg_tile_*` street tiles, every house/POI inside them, every `part_*`, and traders (Cesetalu: 491 tiles, 2658 parts, 5 traders).
+- Street tiles declare their building slots in their XML: `POIMarkerStart/Size/Type/Tags/Group` (e.g. residential_straight: five 42×0×42 POISpawn slots + streetlight PartSpawns with chance 0.2).
+- Tile families: commercial, countryresidential, countrytown, downtown, gateway, industrial, **oldwest** (→ Old Tucson!), residential, rural; each has cap/corner/intersection/straight/t.
+- Useful POIs: `base_military_01` 100×100 (Industrial), `football_stadium` 100×100 (→ Arizona Stadium @ UA), `remnant_sports_center_01` 100×100 (Skate Country stand-in), `skyscraper_01..04` 60×60, `theater_stage_01`, `bridge_concrete_1` 13×39, `bridge_asphalt1` 15×43. `part_highway_overpass`/`transition` are tagged testonly/part — usable only if they actually render; verify.
+- A freshly generated world has **no `*_processed` files** until first load → post-editing `prefabs.xml` / `splat3.png` before first load should be honored (VERIFY in step 5 spike).
+
+### 13.2 Approach: mod for terrain, our code for everything built
+RWG (with importer mod) runs with **Towns = None, Wilderness = None** only to produce the engine-owned files
+(`dtm.raw`, `main.ttw`, `biomes.png`, `splat4`, `radiation.png`, `map_info.xml`). Our Python then **overwrites
+`prefabs.xml`, `splat3.png`, `spawnpoints.xml`** with real Tucson. No reliance on RWG's placement heuristics.
+(Fallback B = also write dtm.raw ourselves and drop the mod — only if the mod blocks something.)
+
+### 13.3 Components (one script each, `tools/`)
+1. **`warp.py` — separable piecewise-linear scale.** Control points per axis (lon→x, lat→z) put landmark bands at ~2 m/block and
+   squeeze filler. Keeps the N-S/E-W arterial grid straight. Single source of truth used by every other step.
+   Box: west = Old Tucson (−111.14), east ≈ −110.72, south = 32.10 (Tucson Intl fits at uniform scale; kept only if budget allows), north ≈ 32.46.
+2. **`terrain.py` — DEM → heightmap.png + biomes_source.png.** Higher-res DEM (terrarium z14 ≈ 8 m, keyless). Through the warp.
+   Flatten landmark footprints (DM AFB, downtown, UA, Skate Country, Old Tucson, airport) to their median height.
+   Biomes: desert basin, forest (Catalinas mid), snow (Lemmon summit). Height mapping as spike (valley 35 → peak ~214).
+3. **`roads.py` — OSM → graded road beds + splat3.** Classes: motorway/trunk (I-10, I-19), primary/secondary arterials.
+   Widths scaled (motorway ≈ 16 blocks incl. shoulders, arterial ≈ 8–10). Road bed = heightmap smoothed along centerline with max grade.
+   Paint splat3 R (asphalt). **Overpasses:** raise the interstate as a berm; crossing arterials cut under; place `bridge_concrete_*` over the cut.
+   Barriers/lane lines: out of scope v1 (need custom prefab blocks) — revisit after v1 plays.
+4. **`neighborhoods.py` — real street grid → street tiles.** In chosen neighborhood zones, snap to the warped arterial grid and lay
+   `rwg_tile_*` (downtown near Congress/Broadway, residential/countryresidential in filler, industrial near rail/DM, oldwest at Old Tucson).
+   Fill each tile's POISpawn slots with size/zoning-matching POIs. **Slot-fill rule is learned from Cesetalu/Tisuviro prefabs.xml**
+   (tile pos + rotation → house pos + rotation), not guessed.
+5. **`landmarks.py` — hand-listed placements** (YAML): downtown skyscrapers, UA (+ football_stadium), DM AFB (`base_military_01`,
+   army camps, runway = asphalt splat strip on flattened ground), Skate Country, Old Tucson, Mt Lemmon (Summerhaven cabins), traders spread
+   across the map. Y from dtm + YOffset + 1 (verified rule).
+6. **`assemble.py` — write prefabs.xml / splat3.png / spawnpoints.xml into the generated world; copy to GeneratedWorlds.**
+
+### 13.4 Order & verification (each step ends in-game)
+1. Warp + terrain + flattened zones → regenerate (Towns/Wilderness None) → check landmark zones flat and where expected.
+2. **Post-edit spike:** hand-add 3 prefabs + one asphalt stripe to that world's prefabs.xml/splat3.png → load → confirm honored.
+3. Roads → verify I-10/I-19 shape, grades drivable, one overpass works.
+4. Landmarks → walk to each.
+5. Neighborhoods (slot-fill rule from data) → verify houses sit in lots, quests work.
+6. Airport if space; package for the friends' dedicated server + SandboxCode.
+
+### 13.5 Out of scope v1 (YAGNI)
+Lane striping, concrete barriers, water, custom prefabs, the living-severed-head mod, residential streets outside tile zones.
