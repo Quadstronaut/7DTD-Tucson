@@ -2,9 +2,9 @@ size = 10240
 
 [box]
 west = -111.14
-east = -110.72
+east = -110.66   # widened 2026-09-24: whole Catalina Hwy to Summerhaven/Ski Valley
 south = 32.10
-north = 32.46
+north = 32.47
 
 [height]            # elevation (m) -> block height, linear + clamp
 ele_lo = 650.0
@@ -15,8 +15,8 @@ blk_hi = 215.0
 # Separable piecewise-linear warp. km measured from box west / box south.
 # Pairs are [real_km, world_block]; must start at [0,0] and end at [span_km, size].
 [warp]
-x = [[0.0, 0], [3.0, 1200], [14.0, 3400], [19.5, 5600], [21.5, 6000], [31.5, 8500], [33.5, 9100], [39.53, 10240]]
-z = [[0.0, 0], [3.0, 700], [10.0, 2700], [12.5, 3500], [16.0, 4900], [22.0, 6300], [36.0, 9000], [39.81, 10240]]
+x = [[0.0, 0], [3.0, 1100], [14.0, 3000], [19.5, 5000], [21.5, 5350], [31.5, 7700], [45.18, 10240]]
+z = [[0.0, 0], [3.0, 650], [10.0, 2600], [12.5, 3350], [16.0, 4700], [22.0, 6050], [36.0, 8900], [40.91, 10240]]
 
 [biomes]            # upper bound (m) -> color; checked in order
 bands = [[1350.0, "FFE477"], [2500.0, "004000"], [1e9, "FFFFFF"]]

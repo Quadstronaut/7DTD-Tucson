@@ -30,3 +30,12 @@ def test_spawns_keep_off_edge():
     pts = assemble.spawn_along_motorway(ways, blk, n=5, margin=400)
     xs = [p[0] + 1000 for p in pts]
     assert min(xs) >= 400 and max(xs) < 1600
+
+
+def test_biomes_png_eighth_scale_rgba(tmp_path):
+    from tucson.config import load
+    ele = np.full((80, 80), 800, np.float32); ele[:8] = 2700                 # snow strip on the north edge
+    p = tmp_path / "b.png"; assemble.write_biomes(str(p), ele, load())
+    a = np.asarray(Image.open(p))
+    assert a.shape == (10, 10, 4) and (a[..., 3] == 255).all()
+    assert a[0, 0, :3].tolist() == [255, 255, 255] and a[5, 5, :3].tolist() == [255, 228, 119]

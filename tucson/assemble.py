@@ -10,7 +10,7 @@ from .config import load
 from .warp import Warp
 
 GW = os.path.expandvars(r"%APPDATA%\7DaysToDie\GeneratedWorlds")
-SHELL_FILES = ["main.ttw", "map_info.xml", "biomes.png", "splat4.png", "radiation.png"]
+SHELL_FILES = ["main.ttw", "map_info.xml", "splat4.png", "radiation.png"]   # biomes.png is ours (warp-dependent)
 DERIVED = ("_processed", "_half", "checksums.txt")
 
 
@@ -19,6 +19,9 @@ def copy_shell(src, dst, allow_loaded=False):
     if loaded and not allow_loaded:
         raise RuntimeError(f"shell {src} has been loaded ({loaded[:3]}); pass allow_loaded=True to use it anyway")
     os.makedirs(dst, exist_ok=True)
+    for f in os.listdir(dst):                                     # stale derived files from a previous load
+        if any(k in f for k in DERIVED):
+            os.remove(os.path.join(dst, f))
     for f in SHELL_FILES:
         shutil.copy2(os.path.join(src, f), os.path.join(dst, f))
 
@@ -31,6 +34,13 @@ def write_splat3(path, ch):
     a = np.zeros(ch.shape + (4,), np.uint8)
     a[ch == 1] = [255, 0, 0, 255]; a[ch == 2] = [0, 255, 0, 255]
     Image.fromarray(a, "RGBA").save(path)
+
+
+def write_biomes(path, ele, cfg):
+    """biomes.png = RGBA at 1/8 world size, row 0 = north, alpha 255 (verified vs an RWG world)."""
+    small = ele[4::8, 4::8]                                          # sample block centers of each 8x8 cell
+    rgb = terrain.biome_rgb(small, cfg)
+    Image.fromarray(np.dstack([rgb, np.full(small.shape, 255, np.uint8)]), "RGBA").save(path)
 
 
 def write_spawnpoints(path, pts):
@@ -61,6 +71,7 @@ def build(shell, name, allow_loaded=False):
     ele = terrain.elevation_grid(warp, N)
     for zname, rings in zones.polygons(cfg).items():
         ele = terrain.flatten(ele, zones.mask(rings, warp, N))
+    write_biomes(os.path.join(dst, "biomes.png"), ele, cfg)
     blk = terrain.to_blocks(ele, cfg).astype(np.float32)
     wways = roads.to_world(roads.fetch_ways(cfg), warp)
     blk, road, ch = roads.grade(blk, wways, cfg)

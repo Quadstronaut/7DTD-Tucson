@@ -224,3 +224,13 @@ Lane striping, concrete barriers, water, custom prefabs, the living-severed-head
 - First load creates `dtm_processed.raw`, `splat3_processed.png`, `splat3_half.png`, `splat4_processed.png`, `splat4_half.png`, `checksums.txt`.
   → Author edits into a **never-loaded** world copy. Whether deleting the derived files forces a rebuild is UNVERIFIED.
 - Test save for this world should be deleted before real play (it has chunks generated from the test edits).
+
+### Plan 2 progress (2026-09-24)
+- **Hand-assembled world loads** (user in game): game builds its `*_processed` files itself from our dtm.raw/splat3.png — no mod/EAC loop needed anymore.
+  Debug map shows "VERY familiar roads".
+- User change: whole Mt Lemmon drive must be on-map (ski resort later). Box widened: **E −110.66, N 32.47**; warp rebalanced
+  (x: [0,0],[3,1100],[14,3000],[19.5,5000],[21.5,5350],[31.5,7700],[45.18,10240]; z: …,[36,8900],[40.91,10240]).
+  Verified: Catalina Hwy / General Hitchcock Hwy from Tanque Verde to Summerhaven fully inside.
+- `biomes.png` now written by us: RGBA, **1/8 scale, row 0 = north, alpha 255** (verified 99.9% match vs RWG output).
+- Assemble clears stale derived files in the target world. Existing saves of a rebuilt world must be deleted (chunks cached).
+- Ski Run Road's upper part is `highway=unclassified` (not in road classes) → add explicitly with the ski resort (Plan 3).
