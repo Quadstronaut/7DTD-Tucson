@@ -1,0 +1,43 @@
+size = 10240
+
+[box]
+west = -111.14
+east = -110.72
+south = 32.10
+north = 32.46
+
+[height]            # elevation (m) -> block height, linear + clamp
+ele_lo = 650.0
+ele_hi = 2800.0
+blk_lo = 35.0
+blk_hi = 215.0
+
+# Separable piecewise-linear warp. km measured from box west / box south.
+# Pairs are [real_km, world_block]; must start at [0,0] and end at [span_km, size].
+[warp]
+x = [[0.0, 0], [3.0, 1200], [14.0, 3400], [19.5, 5600], [21.5, 6000], [31.5, 8500], [33.5, 9100], [39.53, 10240]]
+z = [[0.0, 0], [3.0, 700], [10.0, 2700], [12.5, 3500], [16.0, 4900], [22.0, 6300], [36.0, 9000], [39.81, 10240]]
+
+[biomes]            # upper bound (m) -> color; checked in order
+bands = [[1350.0, "FFE477"], [2500.0, "004000"], [1e9, "FFFFFF"]]
+
+# Zones flattened to their median elevation. osm = Overpass selector (polygon source);
+# rect = [south, west, north, east] explicit area.
+[[zones]]
+name = "dm_afb"
+osm = 'relation["name"="Davis-Monthan Air Force Base"]["landuse"="military"]'
+[[zones]]
+name = "tus_airport"
+osm = 'relation["aeroway"="aerodrome"]["iata"="TUS"]'
+[[zones]]
+name = "ua_campus"
+osm = 'relation["amenity"="university"]["name"="University of Arizona"]'
+[[zones]]
+name = "old_tucson"
+osm = 'way["tourism"="theme_park"]["name"="Old Tucson"]'
+[[zones]]
+name = "downtown"
+rect = [32.214, -110.980, 32.230, -110.962]
+[[zones]]
+name = "skate_country"
+rect = [32.2045, -110.8245, 32.2082, -110.8200]

@@ -5,3 +5,4 @@ cache/
 *.tif
 __pycache__/
 vendor/
+.pytest_cache/
