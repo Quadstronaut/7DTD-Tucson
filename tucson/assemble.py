@@ -1,14 +1,15 @@
 """Build GeneratedWorlds/<name> from an empty never-loaded RWG shell + our terrain/roads.
 
-python -m tucson.assemble --shell "Tisuviro County" --name Tucson_AZ [--allow-loaded]
+python -m tucson.assemble [--name Tucson_AZ] [--shell <dir>] [--allow-loaded]
 """
 import argparse, os, shutil
 import numpy as np
 from PIL import Image
 from . import roads, terrain, zones
-from .config import load
+from .config import ROOT, load
 from .warp import Warp
 
+SHELL_DIR = os.path.join(ROOT, "data", "shell")   # engine files from an empty RWG 10240 world (Towns/Wilderness None)
 GW = os.path.expandvars(r"%APPDATA%\7DaysToDie\GeneratedWorlds")
 SHELL_FILES = ["main.ttw", "map_info.xml", "splat4.png", "radiation.png"]   # biomes.png is ours (warp-dependent)
 DERIVED = ("_processed", "_half", "checksums.txt")
@@ -67,7 +68,7 @@ def spawn_along_motorway(wways, blk, n=12, margin=400):
 def build(shell, name, allow_loaded=False):
     cfg = load(); warp = Warp(cfg); N = cfg["size"]
     dst = os.path.join(GW, name)
-    copy_shell(os.path.join(GW, shell), dst, allow_loaded)
+    copy_shell(shell if os.path.isabs(shell) else os.path.join(GW, shell), dst, allow_loaded)
     ele = terrain.elevation_grid(warp, N)
     for zname, rings in zones.polygons(cfg).items():
         ele = terrain.flatten(ele, zones.mask(rings, warp, N))
@@ -83,6 +84,6 @@ def build(shell, name, allow_loaded=False):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("--shell", required=True); ap.add_argument("--name", default="Tucson_AZ")
+    ap = argparse.ArgumentParser(); ap.add_argument("--shell", default=SHELL_DIR); ap.add_argument("--name", default="Tucson_AZ")
     ap.add_argument("--allow-loaded", action="store_true"); a = ap.parse_args()
     build(a.shell, a.name, a.allow_loaded)

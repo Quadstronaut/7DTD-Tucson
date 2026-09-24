@@ -6,3 +6,5 @@ cache/
 __pycache__/
 vendor/
 .pytest_cache/
+
+# engine shell files are tracked on purpose (data/shell)
