@@ -234,3 +234,6 @@ Lane striping, concrete barriers, water, custom prefabs, the living-severed-head
 - `biomes.png` now written by us: RGBA, **1/8 scale, row 0 = north, alpha 255** (verified 99.9% match vs RWG output).
 - Assemble clears stale derived files in the target world. Existing saves of a rebuilt world must be deleted (chunks cached).
 - Ski Run Road's upper part is `highway=unclassified` (not in road classes) → add explicitly with the ski resort (Plan 3).
+- Height curve (user-approved "option 2 @ 235"): piecewise [[650,35],[1000,48],[2800,235]] replaces linear 650→35 / 2800→215.
+  Built: summit 233.7, Ski Valley 208.8, Summerhaven 190.4, downtown 37.8, world median 41.3. Safe ceiling for POIs at the
+  summit still UNVERIFIED (check with the ski lodge in Plan 3).

@@ -6,11 +6,11 @@ east = -110.66   # widened 2026-09-24: whole Catalina Hwy to Summerhaven/Ski Val
 south = 32.10
 north = 32.47
 
-[height]            # elevation (m) -> block height, linear + clamp
-ele_lo = 650.0
-ele_hi = 2800.0
-blk_lo = 35.0
-blk_hi = 215.0
+[height]
+# Piecewise-linear elevation (m) -> block height, clamped at the ends. Knee at 1000 m keeps the
+# (really flat) Tucson basin in a narrow band and spends the vertical budget on the mountains.
+# Summit target 235 (user, 2026-09-24); dtm.raw can encode up to 255.99.
+curve = [[650.0, 35.0], [1000.0, 48.0], [2800.0, 235.0]]
 
 # Separable piecewise-linear warp. km measured from box west / box south.
 # Pairs are [real_km, world_block]; must start at [0,0] and end at [span_km, size].

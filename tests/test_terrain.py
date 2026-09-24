@@ -15,9 +15,19 @@ def test_flatten_inside_constant_and_edge_blends():
     assert step < 5 * np.abs(np.diff(ele, axis=1)).max() + 1e-3   # no cliff at the edge
     assert np.allclose(out[:, :30], ele[:, :30])                  # far away untouched
 
-def test_to_blocks_range_and_clamp():
-    b = terrain.to_blocks(np.array([0, 650, 2800, 9000], np.float32), CFG)
-    assert b.tolist() == [35.0, 35.0, 215.0, 215.0]
+def test_to_blocks_curve_and_clamp():
+    b = terrain.to_blocks(np.array([0, 650, 1000, 2800, 9000], np.float32), CFG)
+    assert b.tolist() == [35.0, 35.0, 48.0, 235.0, 235.0]
+
+def test_mountains_get_most_of_the_range():
+    b = terrain.to_blocks(np.array([650, 1000, 2791], np.float32), CFG)     # valley, basin edge, Lemmon
+    assert (b[2] - b[1]) > 8 * (b[1] - b[0])
+
+def test_bad_curve_rejected():
+    import pytest
+    with pytest.raises(ValueError):
+        terrain.to_blocks(np.array([700.0]), {**CFG, "height": {"curve": [[650, 35], [600, 40]]}})
+
 
 def test_biome_colors():
     rgb = terrain.biome_rgb(np.array([[800, 1800, 2700]], np.float32), CFG)

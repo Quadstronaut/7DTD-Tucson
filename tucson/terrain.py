@@ -24,9 +24,11 @@ def flatten(ele, m, feather=24):
 
 
 def to_blocks(ele, cfg):
-    h = cfg["height"]
-    e = np.clip(ele, h["ele_lo"], h["ele_hi"])
-    return h["blk_lo"] + (e - h["ele_lo"]) * (h["blk_hi"] - h["blk_lo"]) / (h["ele_hi"] - h["ele_lo"])
+    """Piecewise-linear [elevation_m, block] curve from config; np.interp clamps at both ends."""
+    c = np.array(cfg["height"]["curve"], float)
+    if np.any(np.diff(c[:, 0]) <= 0) or np.any(np.diff(c[:, 1]) <= 0):
+        raise ValueError("height curve must be strictly increasing")
+    return np.interp(ele, c[:, 0], c[:, 1]).astype(np.float32)
 
 
 def biome_rgb(ele, cfg):
