@@ -41,3 +41,16 @@ rect = [32.214, -110.980, 32.230, -110.962]
 [[zones]]
 name = "skate_country"
 rect = [32.2045, -110.8245, 32.2082, -110.8200]
+
+[roads]             # OSM highway class -> [width_blocks, splat]  (splat: "R" asphalt, "G" gravel)
+motorway = [7, "R"]          # per carriageway (I-10/I-19 are two oneway ways)
+motorway_link = [5, "R"]
+trunk = [8, "R"]
+trunk_link = [5, "R"]
+primary = [8, "R"]
+primary_link = [5, "R"]
+secondary = [7, "R"]
+secondary_link = [5, "R"]
+tertiary = [5, "R"]
+feather = 6                  # blocks of blend from road edge to natural terrain
+profile_sigma = 25           # blocks, 1-D smoothing of the terrain profile along each road
