@@ -122,9 +122,21 @@ All map to native V3 **Sandbox Options** (descriptions verified in `Localization
 - DEM source: USGS 3DEP via OpenTopography (API key?) or AWS terrain tiles (no key). Spike uses whatever works keyless.
 - Airport inclusion depends on warp budget.
 
-## 10. Side task: AdNauseam in Playwright MCP browser
+## 10. Side task: AdNauseam in Playwright MCP browser — DONE 2026-09-24
 
-- AdNauseam v3.29.0 Chromium build is **Manifest V2**; Playwright Chromium 149 **hangs** loading it (tested). Branded Chrome ignores `--load-extension`.
-- Unpacked copy at `%LOCALAPPDATA%\ms-playwright\extensions\adnauseam`.
-- Playwright MCP is configured in `~/.claude.json` (`@playwright/mcp@0.0.80`, default chrome channel, per-workspace profile `ms-playwright\mcp-chrome-<hash>`).
-- Next: test Playwright **Firefox** + AdNauseam Firefox build; manage Firefox via Scoop per user.
+- Chromium route dead: AdNauseam Chromium build is MV2; Playwright Chromium 149 hangs loading it; branded Chrome ignores `--load-extension`.
+- Working route: **stock Firefox via Scoop** (`scoop install extras/firefox`, 156.0.1) driven over WebDriver BiDi (`channel: moz-firefox`).
+  Signed AMO XPI (`adnauseam@rednoise.org` 3.28.8) dropped into profile `extensions/`; verified `active: true`.
+- Config: `~/.claude/playwright-mcp-firefox.json`; `~/.claude.json` playwright args += `--config <that>` (backup `.claude.json.bak-2026-09-24-adnauseam`).
+  Profile persists at `%LOCALAPPDATA%\ms-playwright\mcp-firefox-persistent` (all projects share it). Needs `-wait-for-browser` (Windows launcher process) + `-no-remote`.
+- Takes effect on next Claude Code restart. Revert = remove the two `--config` args.
+
+## 11. Spike status
+
+- `tools/spike_heightmap.py` → `out/spike/` (gitignored). Box W-111.14 E-110.717 S32.10 N32.46, 39.8 km square, 3.89 m/block, blocks 35–214.
+  Lemmon peak lands at expected pixel (row 498, col 8503) → orientation correct.
+- Installed into `<game>/Mods/CustomHeightMapImporter/` with heightmap.png + biomes_source.png.
+- **NEXT (user, in game):** New Game → generate RWG world at **10240**, any seed, preview on. Then Claude reads
+  `%APPDATA%DaysToDie\logs` + the new GeneratedWorlds folder to verify mod ran, heights, orientation.
+- Mod is a DLL; if it doesn't load, check whether the game must be launched without EAC (unverified).
+- **Remove the mod folder (or its heightmap.png) after the spike** or every future RWG world becomes Tucson.
