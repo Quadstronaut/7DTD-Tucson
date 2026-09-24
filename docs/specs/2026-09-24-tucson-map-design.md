@@ -216,3 +216,11 @@ Lane striping, concrete barriers, water, custom prefabs, the living-severed-head
   RWG still wrote 12 spawnpoints (some at y≈185 in the Catalinas). dtm vs heightmap max |diff| 0.87. Mod removed from game again.
 - Task 5 applied: 3 POIs at world (0,*,0), (200,*,0), (400,*,0); asphalt stripe at splat3 image rows 4820–4827, cols 5120–5719
   (→ z ≈ +300 if image row 0 = north, z ≈ −300 if row 0 = south). Awaiting in-game report.
+
+### Plan 1 RESULT — PASSED (user in-game, 2026-09-24, game V3.2.0 b10 / map_info V.3.20.10)
+- **Post-generation edits to prefabs.xml are honored**; POIs sit on the ground with Y = dtm + YOffset + 1 (verified: sports center, skyscraper, stadium).
+- **Post-generation edits to splat3.png are honored** (asphalt stripe rendered as a road).
+- **splat3.png image row 0 = NORTH** (stripe at rows 4820–4827 appeared north of z=0). Same orientation as heightmap.png; opposite of dtm.raw (row 0 = south).
+- First load creates `dtm_processed.raw`, `splat3_processed.png`, `splat3_half.png`, `splat4_processed.png`, `splat4_half.png`, `checksums.txt`.
+  → Author edits into a **never-loaded** world copy. Whether deleting the derived files forces a rebuild is UNVERIFIED.
+- Test save for this world should be deleted before real play (it has chunks generated from the test edits).
