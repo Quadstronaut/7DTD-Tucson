@@ -137,6 +137,6 @@ All map to native V3 **Sandbox Options** (descriptions verified in `Localization
   Lemmon peak lands at expected pixel (row 498, col 8503) → orientation correct.
 - Installed into `<game>/Mods/CustomHeightMapImporter/` with heightmap.png + biomes_source.png.
 - **NEXT (user, in game):** New Game → generate RWG world at **10240**, any seed, preview on. Then Claude reads
-  `%APPDATA%DaysToDie\logs` + the new GeneratedWorlds folder to verify mod ran, heights, orientation.
+  `%APPDATA%\7DaysToDie\logs` + the new GeneratedWorlds folder to verify mod ran, heights, orientation.
 - Mod is a DLL; if it doesn't load, check whether the game must be launched without EAC (unverified).
 - **Remove the mod folder (or its heightmap.png) after the spike** or every future RWG world becomes Tucson.
