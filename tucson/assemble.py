@@ -39,7 +39,7 @@ def write_spawnpoints(path, pts):
     open(path, "w", encoding="utf-8").write(f"<spawnpoints>\n{body}</spawnpoints>\n")
 
 
-def spawn_along_motorway(wways, blk, n=12):
+def spawn_along_motorway(wways, blk, n=12, margin=400):
     """n spawn points on motorway centerlines, evenly spread; yaw along the road."""
     N = blk.shape[0]; cands = []
     for w in wways:
@@ -48,7 +48,8 @@ def spawn_along_motorway(wways, blk, n=12):
         p = roads.densify(w["xy"], 50)
         for a, b in zip(p[:-1], p[1:]):
             yaw = int(np.degrees(np.arctan2(b[0] - a[0], -(b[1] - a[1]))) % 360)   # 0 = north
-            cands.append((int(a[0]), int(a[1]), yaw))
+            if margin <= a[0] < N - margin and margin <= a[1] < N - margin:   # keep off the world edge
+                cands.append((int(a[0]), int(a[1]), yaw))
     pick = [cands[i] for i in np.linspace(0, len(cands) - 1, n).astype(int)]
     return [(x - N // 2, float(blk[r, x]) + 1, (N - 1 - r) - N // 2, yaw) for x, r, yaw in pick]
 

@@ -22,3 +22,11 @@ def test_splat3_values(tmp_path):
     assemble.write_splat3(str(p), ch)
     a = np.asarray(Image.open(p))
     assert a[0, 1].tolist() == [255, 0, 0, 255] and a[1, 0].tolist() == [0, 255, 0, 255] and a[0, 0].tolist() == [0, 0, 0, 0]
+
+
+def test_spawns_keep_off_edge():
+    blk = np.zeros((2000, 2000), np.float32)
+    ways = [{"cls": "motorway", "xy": np.array([[5.0, 1000.0], [1995.0, 1000.0]])}]
+    pts = assemble.spawn_along_motorway(ways, blk, n=5, margin=400)
+    xs = [p[0] + 1000 for p in pts]
+    assert min(xs) >= 400 and max(xs) < 1600
