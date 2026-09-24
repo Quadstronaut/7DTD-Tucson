@@ -1,0 +1,6 @@
+﻿.playwright-mcp/
+out/
+cache/
+*.raw
+*.tif
+__pycache__/
