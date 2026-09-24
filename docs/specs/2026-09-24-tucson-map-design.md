@@ -237,3 +237,4 @@ Lane striping, concrete barriers, water, custom prefabs, the living-severed-head
 - Height curve (user-approved "option 2 @ 235"): piecewise [[650,35],[1000,48],[2800,235]] replaces linear 650→35 / 2800→215.
   Built: summit 233.7, Ski Valley 208.8, Summerhaven 190.4, downtown 37.8, world median 41.3. Safe ceiling for POIs at the
   summit still UNVERIFIED (check with the ski lodge in Plan 3).
+- World renamed **"Pima County"** (user). In-game world name = GeneratedWorlds folder name (no name in main.ttw/map_info.xml — checked). `assemble` default `--name "Pima County"`.

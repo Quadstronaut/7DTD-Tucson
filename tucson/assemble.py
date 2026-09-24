@@ -1,6 +1,6 @@
 """Build GeneratedWorlds/<name> from an empty never-loaded RWG shell + our terrain/roads.
 
-python -m tucson.assemble [--name Tucson_AZ] [--shell <dir>] [--allow-loaded]
+python -m tucson.assemble [--name "Pima County"] [--shell <dir>] [--allow-loaded]
 """
 import argparse, os, shutil
 import numpy as np
@@ -84,6 +84,6 @@ def build(shell, name, allow_loaded=False):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("--shell", default=SHELL_DIR); ap.add_argument("--name", default="Tucson_AZ")
+    ap = argparse.ArgumentParser(); ap.add_argument("--shell", default=SHELL_DIR); ap.add_argument("--name", default="Pima County")
     ap.add_argument("--allow-loaded", action="store_true"); a = ap.parse_args()
     build(a.shell, a.name, a.allow_loaded)
