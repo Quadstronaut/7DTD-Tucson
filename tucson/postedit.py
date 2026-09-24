@@ -3,7 +3,7 @@
 python -m tucson.postedit "<world name>"
 Backs up prefabs.xml / splat3.png to *.orig once.
 """
-import os, shutil, sys
+import os, re, shutil, sys
 import numpy as np
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
@@ -25,6 +25,9 @@ def add_decorations(world_dir, items):
     s = open(p, encoding="utf-8-sig").read()
     lines = "".join(f'  <decoration type="model" name="{n}" position="{x},{y},{z}" rotation="{r}" />\n'
                     for n, x, y, z, r in items)
+    s = re.sub(r"<prefabs\s*/>", "<prefabs>\n</prefabs>", s)       # empty world writes a self-closing tag
+    if "</prefabs>" not in s:
+        raise ValueError(f"{p}: no <prefabs> root")
     s = s.replace("</prefabs>", lines + "</prefabs>")
     open(p, "w", encoding="utf-8").write(s)
 
