@@ -209,3 +209,10 @@ RWG (with importer mod) runs with **Towns = None, Wilderness = None** only to pr
 
 ### 13.5 Out of scope v1 (YAGNI)
 Lane striping, concrete barriers, water, custom prefabs, the living-severed-head mod, residential streets outside tile zones.
+
+### Plan 1 progress (2026-09-24)
+- Tasks 1–3 done (17 tests). Warped terrain built; zones verified in `tucson.overlay` view.
+- Task 4 done: regenerated "Tisuviro County" with Towns=None, Wilderness=None → **prefabs.xml empty (`<prefabs />`), no traders, splat3 empty**;
+  RWG still wrote 12 spawnpoints (some at y≈185 in the Catalinas). dtm vs heightmap max |diff| 0.87. Mod removed from game again.
+- Task 5 applied: 3 POIs at world (0,*,0), (200,*,0), (400,*,0); asphalt stripe at splat3 image rows 4820–4827, cols 5120–5719
+  (→ z ≈ +300 if image row 0 = north, z ≈ −300 if row 0 = south). Awaiting in-game report.
