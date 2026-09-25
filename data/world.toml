@@ -52,5 +52,6 @@ primary_link = [5, "R"]
 secondary = [7, "R"]
 secondary_link = [5, "R"]
 tertiary = [5, "R"]
+runway = [15, "R"]           # aeroway=runway (DM AFB, TUS)
 feather = 6                  # blocks of blend from road edge to natural terrain
 profile_sigma = 25           # blocks, 1-D smoothing of the terrain profile along each road

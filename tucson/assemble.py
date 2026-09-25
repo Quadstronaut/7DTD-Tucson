@@ -5,7 +5,7 @@ python -m tucson.assemble [--name "Pima County"] [--shell <dir>] [--allow-loaded
 import argparse, os, shutil
 import numpy as np
 from PIL import Image
-from . import roads, terrain, zones
+from . import landmarks, roads, terrain, zones
 from .config import ROOT, load
 from .warp import Warp
 
@@ -44,6 +44,12 @@ def write_biomes(path, ele, cfg):
     Image.fromarray(np.dstack([rgb, np.full(small.shape, 255, np.uint8)]), "RGBA").save(path)
 
 
+def write_prefabs(path, decs):
+    body = "".join(f'  <decoration type="model" name="{n}" position="{x},{y},{z}" rotation="{r}" />\n'
+                   for n, x, y, z, r in decs)
+    open(path, "w", encoding="utf-8").write(f'<?xml version="1.0" encoding="UTF-8"?>\n<prefabs>\n{body}</prefabs>\n')
+
+
 def write_spawnpoints(path, pts):
     """pts: list of (x, y, z, yaw_deg) in world coords."""
     body = "".join(f'    <spawnpoint position="{x},{y:.2f},{z}" rotation="0,{yaw},0"/>\n' for x, y, z, yaw in pts)
@@ -74,13 +80,17 @@ def build(shell, name, allow_loaded=False):
         ele = terrain.flatten(ele, zones.mask(rings, warp, N))
     write_biomes(os.path.join(dst, "biomes.png"), ele, cfg)
     blk = terrain.to_blocks(ele, cfg).astype(np.float32)
-    wways = roads.to_world(roads.fetch_ways(cfg), warp)
+    wways = roads.to_world(roads.fetch_ways(cfg) + roads.fetch_extra(cfg), warp)
     blk, road, ch = roads.grade(blk, wways, cfg)
+    places = landmarks.load()
+    decs, warns = landmarks.place(places, landmarks.resolve(places), warp, blk, road)
+    for w in warns:
+        print("WARN", w)
     write_dtm(os.path.join(dst, "dtm.raw"), blk)
     write_splat3(os.path.join(dst, "splat3.png"), ch)
     open(os.path.join(dst, "prefabs.xml"), "w", encoding="utf-8").write('<?xml version="1.0" encoding="UTF-8"?>\n<prefabs>\n</prefabs>\n')
     write_spawnpoints(os.path.join(dst, "spawnpoints.xml"), spawn_along_motorway(wways, blk))
-    print(f"wrote {dst}: {len(wways)} road pieces, {road.sum()} road px")
+    print(f"wrote {dst}: {len(wways)} road pieces, {road.sum()} road px, {len(decs)} landmarks")
 
 
 if __name__ == "__main__":

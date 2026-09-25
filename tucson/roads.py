@@ -7,10 +7,26 @@ from . import zones
 from .config import ROOT
 
 CACHE = os.path.join(ROOT, "cache", "osm", "roads.json")
+EXTRA_CACHE = os.path.join(ROOT, "cache", "osm", "roads_extra.json")
+# Ways outside the highway-class query that the map needs: runways, and Ski Run Road's
+# upper part (highway=unclassified) up to the ski resort.
+EXTRA = [('way["aeroway"="runway"]', "runway"), ('way["highway"]["name"="East Ski Run Road"]', "tertiary")]
 
 
 def classes(cfg):
-    return [k for k, v in cfg["roads"].items() if isinstance(v, list)]
+    return [k for k, v in cfg["roads"].items() if isinstance(v, list) and k != "runway"]
+
+
+def fetch_extra(cfg):
+    if os.path.exists(EXTRA_CACHE):
+        return json.load(open(EXTRA_CACHE))
+    b = cfg["box"]; bb = f'({b["south"]},{b["west"]},{b["north"]},{b["east"]})'; out = []
+    for sel, cls in EXTRA:
+        d = zones.overpass(f"{sel}{bb};out geom tags;")
+        out += [{"id": e["id"], "cls": cls, "bridge": False, "pts": [(p["lat"], p["lon"]) for p in e["geometry"]]}
+                for e in d["elements"] if e["type"] == "way" and "geometry" in e]
+    os.makedirs(os.path.dirname(EXTRA_CACHE), exist_ok=True); json.dump(out, open(EXTRA_CACHE, "w"))
+    return out
 
 
 def fetch_ways(cfg):

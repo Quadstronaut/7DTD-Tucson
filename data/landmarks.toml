@@ -1,0 +1,135 @@
+# Hand-picked landmark placements. Coordinates come from OSM (`osm` selector, resolved + cached),
+# or explicit `at = [lat, lon]` only where OSM has no usable feature. `offset = [east_blocks, north_blocks]`
+# nudges the prefab off the OSM point (e.g. off a road). `rot` = 0..3 (game prefab rotation).
+# The prefab's CENTER goes on the point; its footprint gets a flat pad.
+
+# ---------- Skate Country (the reason this map exists) ----------
+[[place]]
+id = "skate_country"
+prefab = "remnant_sports_center_01"
+at = [32.206377, -110.822252]      # 7980 E 22nd St, US Census geocoder (no OSM feature for the rink)
+offset = [0, 57]                   # stand-in sits NORTH of 22nd St (4 road + 50 half-prefab + 3 apron) — side UNCONFIRMED
+rot = 0                            # custom Skate Country prefab planned (co-work with user)
+
+# ---------- University of Arizona ----------
+[[place]]
+id = "arizona_stadium"
+prefab = "football_stadium"
+osm = 'nwr["name"="Arizona Stadium"]'
+rot = 0
+[[place]]
+id = "ua_main_library"
+prefab = "remnant_library_01"
+osm = 'nwr["name"~"^Main Library",i]["amenity"="library"](32.22,-110.96,32.24,-110.94)'
+rot = 0
+[[place]]
+id = "ua_old_main"
+prefab = "school_01"
+osm = 'nwr["name"="Old Main"](32.22,-110.96,32.24,-110.94)'
+rot = 0
+[[place]]
+id = "ua_mckale"
+prefab = "school_03"
+osm = 'nwr["name"~"McKale",i](32.22,-110.96,32.24,-110.94)'
+rot = 0
+[[place]]
+id = "banner_umc"
+prefab = "hospital_01"
+osm = 'nwr["name"~"Banner.*University Medical Center Tucson",i]["amenity"="hospital"]'
+rot = 0
+
+# ---------- Downtown ----------
+[[place]]
+id = "one_south_church"
+prefab = "skyscraper_01"
+osm = 'nwr["name"="One South Church"]'
+rot = 0
+[[place]]
+id = "unisource_tower"
+prefab = "skyscraper_03"
+osm = 'nwr["name"~"UniSource Energy",i]["building"](32.21,-110.98,32.23,-110.96)'
+rot = 0
+[[place]]
+id = "hotel_congress"
+prefab = "hotel_ostrich"
+osm = 'way["name"="The Historic Hotel Congress"]'
+rot = 0
+[[place]]
+id = "fox_theatre"
+prefab = "theater_stage_01"
+osm = 'nwr["name"~"Fox Tucson Theatre|Fox Theatre",i](32.21,-110.98,32.23,-110.96)'
+rot = 0
+[[place]]
+id = "st_augustine"
+prefab = "church_01"
+osm = 'nwr["name"~"Cathedral of Saint Augustine|St. Augustine Cathedral",i]'
+rot = 0
+
+# ---------- San Xavier del Bac ----------
+[[place]]
+id = "san_xavier"
+prefab = "church_02"
+osm = 'nwr["name"~"San Xavier del Bac",i]["amenity"="place_of_worship"]'
+rot = 0
+
+# ---------- Davis-Monthan AFB ----------
+[[place]]
+id = "dm_base"
+prefab = "base_military_01"
+osm = 'relation["name"="Davis-Monthan Air Force Base"]["landuse"="military"]'
+rot = 0
+
+# ---------- Old Tucson (west wall) ----------
+[[place]]
+id = "old_tucson_theater"
+prefab = "theater_stage_01"
+osm = 'way["tourism"="theme_park"]["name"="Old Tucson"]'
+rot = 0
+
+# ---------- Mt Lemmon ----------
+[[place]]
+id = "ski_lodge"
+prefab = "lodge_01"
+osm = 'nwr["name"="Mt. Lemmon Ski Valley"]'
+rot = 0
+[[place]]
+id = "summerhaven_cabin_1"
+prefab = "cabin_01"
+osm = 'node["name"="Summerhaven"]["place"]'
+offset = [-60, 0]
+rot = 0
+[[place]]
+id = "summerhaven_cabin_2"
+prefab = "cabin_04"
+osm = 'node["name"="Summerhaven"]["place"]'
+offset = [60, 0]
+rot = 0
+
+# ---------- Traders (5, spread over the map) ----------
+[[place]]
+id = "trader_tucson_mall"
+prefab = "trader_bob"
+osm = 'nwr["name"="Tucson Mall"]["shop"="mall"]'
+rot = 0
+[[place]]
+id = "trader_park_place"
+prefab = "trader_jen"
+osm = 'nwr["name"="Park Place"]["shop"="mall"]'
+rot = 0
+[[place]]
+id = "trader_el_con"
+prefab = "trader_joel"
+osm = 'nwr["name"~"El Con",i]["shop"="mall"]'
+rot = 0
+[[place]]
+id = "trader_airport"
+prefab = "trader_hugh"
+osm = 'relation["aeroway"="aerodrome"]["iata"="TUS"]'
+offset = [0, 300]
+rot = 0
+[[place]]
+id = "trader_summerhaven"
+prefab = "trader_rekt"
+osm = 'node["name"="Summerhaven"]["place"]'
+offset = [0, -120]
+rot = 0

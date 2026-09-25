@@ -39,3 +39,11 @@ def test_biomes_png_eighth_scale_rgba(tmp_path):
     a = np.asarray(Image.open(p))
     assert a.shape == (10, 10, 4) and (a[..., 3] == 255).all()
     assert a[0, 0, :3].tolist() == [255, 255, 255] and a[5, 5, :3].tolist() == [255, 228, 119]
+
+
+def test_write_prefabs(tmp_path):
+    p = tmp_path / "prefabs.xml"
+    assemble.write_prefabs(str(p), [("skyscraper_01", -5, 40, 7, 1)])
+    s = p.read_text(encoding="utf-8")
+    assert '<decoration type="model" name="skyscraper_01" position="-5,40,7" rotation="1" />' in s
+    assert s.rstrip().endswith("</prefabs>")
