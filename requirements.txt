@@ -1,0 +1,5 @@
+# Versions the test suite was run against (Python 3.14). tomllib needs Python >= 3.11.
+numpy>=2.4
+pillow>=12.1
+scipy>=1.17
+pytest>=9.0
