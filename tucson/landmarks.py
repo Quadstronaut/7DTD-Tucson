@@ -5,7 +5,7 @@ footprint, and emit prefabs.xml decorations with the verified placement rules:
   (verified on 1939/1941 RWG placements in a vanilla world)
 - y = ground + YOffset + 1 (verified in game, Plan 1)
 """
-import glob, json, os, re, tomllib
+import glob, json, os, re, time, tomllib, urllib.parse, urllib.request
 import numpy as np
 from scipy import ndimage
 from . import zones
@@ -35,19 +35,43 @@ def prefab_meta(name):
     return sx, sy, sz, yo
 
 
-def resolve(entries, cache=CACHE):
-    """id -> (lat, lon). OSM selectors resolve to the feature center; cached per id."""
+def nominatim(q, box):
+    vb = f'{box["west"]},{box["north"]},{box["east"]},{box["south"]}'
+    u = "https://nominatim.openstreetmap.org/search?" + urllib.parse.urlencode(
+        {"q": q, "format": "jsonv2", "limit": 1, "viewbox": vb, "bounded": 1})
+    time.sleep(1.1)                                                   # Nominatim usage policy: <= 1 req/s
+    r = json.load(urllib.request.urlopen(urllib.request.Request(u, headers={"User-Agent": "7dtd-tucson/0.1"}), timeout=30))
+    if not r:
+        raise RuntimeError(f"nominatim: nothing for {q!r} inside the map box")
+    return [float(r[0]["lat"]), float(r[0]["lon"])]
+
+
+def inside(latlon, box):
+    return box["south"] <= latlon[0] <= box["north"] and box["west"] <= latlon[1] <= box["east"]
+
+
+def resolve(entries, cache=CACHE, box=None):
+    """id -> (lat, lon). `at` literal, `q` Nominatim (bounded), `osm` Overpass center; cached per id.
+    Anything outside the map box is an error (catches same-name places elsewhere)."""
+    from .config import load as _load
+    box = box or _load()["box"]
     got = json.load(open(cache)) if cache and os.path.exists(cache) else {}
     for e in entries:
         if "at" in e:
             got[e["id"]] = list(e["at"])
-        elif e["id"] not in got:
+        elif e["id"] in got and inside(got[e["id"]], box):
+            continue
+        elif "q" in e:
+            got[e["id"]] = nominatim(e["q"], box)
+        else:
             d = zones.overpass(f"({e['osm']};);out center;")
             els = d.get("elements", [])
             if not els:
                 raise RuntimeError(f"landmark {e['id']}: OSM selector matched nothing: {e['osm']}")
             el = els[0]; c = el.get("center", el)
             got[e["id"]] = [c["lat"], c["lon"]]
+        if not inside(got[e["id"]], box):
+            raise RuntimeError(f"landmark {e['id']} resolved outside the map: {got[e['id']]}")
     if cache:
         os.makedirs(os.path.dirname(cache), exist_ok=True); json.dump(got, open(cache, "w"), indent=1)
     return got
@@ -81,7 +105,7 @@ def flatten_pad(blk, r0, r1, c0, c1):
 def place(entries, coords, warp, blk, road=None):
     """Flatten pads in `blk` (modified in place) and return (decorations, warnings).
     decorations: list of (prefab, x, y, z, rot)."""
-    N = blk.shape[0]; decs, warns = [], []
+    N = blk.shape[0]; decs, warns, rects = [], [], []
     for e in entries:
         sx, sy, sz, yo = prefab_meta(e["prefab"])
         rot = int(e.get("rot", 0))
@@ -94,6 +118,10 @@ def place(entries, coords, warp, blk, road=None):
         r0, r1, c0, c1, wx, wz = footprint(col, row, sx, sz, N)
         if r0 < 0 or c0 < 0 or r1 > N or c1 > N:
             warns.append(f"{e['id']}: off map, skipped"); continue
+        for oid, (a0, a1, b0, b1) in rects:
+            if r0 < a1 and a0 < r1 and c0 < b1 and b0 < c1:
+                warns.append(f"{e['id']}: overlaps {oid}")
+        rects.append((e["id"], (r0, r1, c0, c1)))
         h = flatten_pad(blk, r0, r1, c0, c1)
         y = int(h) + yo + 1
         if y + sy > MAX_TOP:

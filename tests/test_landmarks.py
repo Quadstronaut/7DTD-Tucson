@@ -42,3 +42,21 @@ def test_too_tall_warns(monkeypatch):
     blk = np.full((1000, 1000), 230.0, np.float32)
     _, warns = landmarks.place([{"id": "t", "prefab": "p"}], {"t": [0, 0]}, W(), blk)
     assert any("top" in w for w in warns)
+
+
+def test_resolve_rejects_outside_box(tmp_path, monkeypatch):
+    import pytest
+    box = {"south": 32.1, "north": 32.47, "west": -111.14, "east": -110.66}
+    monkeypatch.setattr(landmarks.zones, "overpass", lambda q: {"elements": [{"lat": 43.97, "lon": -124.1}]})
+    with pytest.raises(RuntimeError, match="outside the map"):
+        landmarks.resolve([{"id": "x", "osm": 'nwr["name"="Park Place"]'}], cache=None, box=box)
+
+
+def test_overlap_warns(monkeypatch):
+    monkeypatch.setattr(landmarks, "prefab_meta", lambda n: (100, 20, 100, -1))
+    class W:
+        def x(self, lon): return 500.0 + lon
+        def z(self, lat): return 500.0
+    blk = np.full((1000, 1000), 50.0, np.float32)
+    _, warns = landmarks.place([{"id": "a", "prefab": "p"}, {"id": "b", "prefab": "p"}], {"a": [0, 0], "b": [0, 60]}, W(), blk)
+    assert any("b: overlaps a" in w for w in warns)

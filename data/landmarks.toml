@@ -1,4 +1,5 @@
-# Hand-picked landmark placements. Coordinates come from OSM (`osm` selector, resolved + cached),
+# Hand-picked landmark placements. Coordinates come from OSM: `osm` = Overpass selector, `q` = Nominatim
+# name search bounded to the map box (both resolved + cached),
 # or explicit `at = [lat, lon]` only where OSM has no usable feature. `offset = [east_blocks, north_blocks]`
 # nudges the prefab off the OSM point (e.g. off a road). `rot` = 0..3 (game prefab rotation).
 # The prefab's CENTER goes on the point; its footprint gets a flat pad.
@@ -18,11 +19,6 @@ prefab = "football_stadium"
 osm = 'nwr["name"="Arizona Stadium"]'
 rot = 0
 [[place]]
-id = "ua_main_library"
-prefab = "remnant_library_01"
-osm = 'nwr["name"~"^Main Library",i]["amenity"="library"](32.22,-110.96,32.24,-110.94)'
-rot = 0
-[[place]]
 id = "ua_old_main"
 prefab = "school_01"
 osm = 'nwr["name"="Old Main"](32.22,-110.96,32.24,-110.94)'
@@ -31,11 +27,12 @@ rot = 0
 id = "ua_mckale"
 prefab = "school_03"
 osm = 'nwr["name"~"McKale",i](32.22,-110.96,32.24,-110.94)'
+offset = [35, 0]                   # stand-in is bigger than the real arena; keep it clear of the stadium (it is NE of it IRL)
 rot = 0
 [[place]]
 id = "banner_umc"
 prefab = "hospital_01"
-osm = 'nwr["name"~"Banner.*University Medical Center Tucson",i]["amenity"="hospital"]'
+q = "Banner University Medical Center Tucson"
 rot = 0
 
 # ---------- Downtown ----------
@@ -43,11 +40,6 @@ rot = 0
 id = "one_south_church"
 prefab = "skyscraper_01"
 osm = 'nwr["name"="One South Church"]'
-rot = 0
-[[place]]
-id = "unisource_tower"
-prefab = "skyscraper_03"
-osm = 'nwr["name"~"UniSource Energy",i]["building"](32.21,-110.98,32.23,-110.96)'
 rot = 0
 [[place]]
 id = "hotel_congress"
@@ -58,18 +50,19 @@ rot = 0
 id = "fox_theatre"
 prefab = "theater_stage_01"
 osm = 'nwr["name"~"Fox Tucson Theatre|Fox Theatre",i](32.21,-110.98,32.23,-110.96)'
+offset = [50, 0]                   # east along Congress, clear of One South Church (Fox is east of it IRL)
 rot = 0
 [[place]]
 id = "st_augustine"
 prefab = "church_01"
-osm = 'nwr["name"~"Cathedral of Saint Augustine|St. Augustine Cathedral",i]'
+q = "Saint Augustine Cathedral"
 rot = 0
 
 # ---------- San Xavier del Bac ----------
 [[place]]
 id = "san_xavier"
 prefab = "church_02"
-osm = 'nwr["name"~"San Xavier del Bac",i]["amenity"="place_of_worship"]'
+q = "Mission San Xavier del Bac"
 rot = 0
 
 # ---------- Davis-Monthan AFB ----------
@@ -114,12 +107,12 @@ rot = 0
 [[place]]
 id = "trader_park_place"
 prefab = "trader_jen"
-osm = 'nwr["name"="Park Place"]["shop"="mall"]'
+q = "Park Place Mall"
 rot = 0
 [[place]]
 id = "trader_el_con"
 prefab = "trader_joel"
-osm = 'nwr["name"~"El Con",i]["shop"="mall"]'
+q = "El Con Center"
 rot = 0
 [[place]]
 id = "trader_airport"

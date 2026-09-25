@@ -88,7 +88,7 @@ def build(shell, name, allow_loaded=False):
         print("WARN", w)
     write_dtm(os.path.join(dst, "dtm.raw"), blk)
     write_splat3(os.path.join(dst, "splat3.png"), ch)
-    open(os.path.join(dst, "prefabs.xml"), "w", encoding="utf-8").write('<?xml version="1.0" encoding="UTF-8"?>\n<prefabs>\n</prefabs>\n')
+    write_prefabs(os.path.join(dst, "prefabs.xml"), decs)
     write_spawnpoints(os.path.join(dst, "spawnpoints.xml"), spawn_along_motorway(wways, blk))
     print(f"wrote {dst}: {len(wways)} road pieces, {road.sum()} road px, {len(decs)} landmarks")
 
