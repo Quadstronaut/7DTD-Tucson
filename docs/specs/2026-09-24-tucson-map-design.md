@@ -154,10 +154,12 @@ All map to native V3 **Sandbox Options** (descriptions verified in `Localization
 
 ## 12. TODO (non-map)
 
-- [ ] **Make repo public** (`gh repo edit Quadstronaut/7DTD-Tucson --visibility public --accept-visibility-change-consequences`).
+- [x] **Make repo public** — DONE 2026-09-25 (scanned: no secrets; noreply commit email) (`gh repo edit Quadstronaut/7DTD-Tucson --visibility public --accept-visibility-change-consequences`).
       Before flipping: scrub personal paths if unwanted (spec cites `C:\Users\Quadstronaut\...`); never commit vendor/ (third-party DLL).
-- [ ] **Bedazzled README.md** (use the `bedazzle` skill; match the user's other repos).
-- [ ] **Discord announcement channel** like the others. Mechanism (verified): QuadstroNot bot repo-digest —
+- [x] **Bedazzled README.md** — DONE 2026-09-25 (+ requirements.txt, repo topics/description) (use the `bedazzle` skill; match the user's other repos).
+- [x] **Discord announcement channel** — channel `#7dtd-tucson` (id 1552940867524894791, news) CREATED 2026-09-25 via admin MCP;
+      config rule landed inside QuadstroNot commit 393c60b (another session's clips commit swept it in) — **digest goes live when that commit is pushed + deployed** (live image was 488dc77).
+      Original note: like the others. Mechanism (verified): QuadstroNot bot repo-digest —
       `G:\Documents\GIT\BUSINESS-pursuits\QuadstroNot\config\github_channels.json` maps repo globs → channel names;
       the `/github-channels` project skill (run inside QuadstroNot) diffs config vs Discord and creates the channel via the admin MCP.
       Add `{ "name": "7dtd-tucson", "repos": ["7DTD-Tucson"] }` (channel name = user's call), then run `/github-channels` there.
