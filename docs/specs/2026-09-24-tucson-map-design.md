@@ -238,3 +238,13 @@ Lane striping, concrete barriers, water, custom prefabs, the living-severed-head
   Built: summit 233.7, Ski Valley 208.8, Summerhaven 190.4, downtown 37.8, world median 41.3. Safe ceiling for POIs at the
   summit still UNVERIFIED (check with the ski lodge in Plan 3).
 - World renamed **"Pima County"** (user). In-game world name = GeneratedWorlds folder name (no name in main.ttw/map_info.xml — checked). `assemble` default `--name "Pima County"`.
+
+### Plan 3 (landmarks) progress — 2026-09-24
+- `data/landmarks.toml` + `tucson/landmarks.py`: 20 placements, coords from OSM (Overpass `osm` / bounded Nominatim `q` / literal `at`), outside-map guard,
+  overlap + road-overlap + height warnings, flat pads. Position = footprint min corner (verified), y = ground + YOffset + 1.
+- **Skate Country: SOUTH side of E 22nd St** (user-confirmed), at US Census geocode of 7980 E 22nd St; stand-in `remnant_sports_center_01`
+  until a custom prefab is co-built with the user. World min corner (2155, 33, −2099).
+- Dropped (not in OSM under any tried name): UA Main Library, UniSource Energy Tower.
+- Runways (DM, TUS) and East Ski Run Road added as extra road ways.
+- End-to-end build test guards the "empty prefabs.xml" regression.
+- **In-game check pending (user, later tonight):** Skate Country, downtown, Ski Valley lodge (roof at 234 → ceiling test).

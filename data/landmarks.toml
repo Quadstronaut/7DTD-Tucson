@@ -9,7 +9,7 @@
 id = "skate_country"
 prefab = "remnant_sports_center_01"
 at = [32.206377, -110.822252]      # 7980 E 22nd St, US Census geocoder (no OSM feature for the rink)
-offset = [0, 57]                   # stand-in sits NORTH of 22nd St (4 road + 50 half-prefab + 3 apron) — side UNCONFIRMED
+offset = [0, -57]                  # SOUTH side of 22nd St (user-confirmed 2026-09-24): 4 road + 50 half-prefab + 3 apron
 rot = 0                            # custom Skate Country prefab planned (co-work with user)
 
 # ---------- University of Arizona ----------
