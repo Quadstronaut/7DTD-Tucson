@@ -38,6 +38,15 @@ def test_splat3_values(tmp_path):
     assert a[0, 1].tolist() == [255, 0, 0, 255] and a[1, 0].tolist() == [0, 255, 0, 255] and a[0, 0].tolist() == [0, 0, 0, 0]
 
 
+def test_splat3_concrete_channel(tmp_path):
+    """splat3.B = terrConcrete, and it is PAINT ONLY -- the biomes.xml entry its block threshold
+    points at ships commented out, so oversized lots get a surface with no voxel change."""
+    ch = np.array([[3, 0]], np.uint8); p = tmp_path / "s.png"
+    assemble.write_splat3(str(p), ch)
+    a = np.asarray(Image.open(p))
+    assert a[0, 0].tolist() == [0, 0, 255, 255] and a[0, 1].tolist() == [0, 0, 0, 0]
+
+
 def test_spawns_keep_off_edge():
     blk = np.zeros((2000, 2000), np.float32)
     ways = [{"cls": "motorway", "xy": np.array([[5.0, 1000.0], [1995.0, 1000.0]])}]

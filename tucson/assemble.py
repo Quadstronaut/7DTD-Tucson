@@ -5,7 +5,7 @@ python -m tucson.assemble [--name "Pima County"] [--shell <dir>] [--allow-loaded
 import argparse, os, shutil
 import numpy as np
 from PIL import Image
-from . import landmarks, roads, terrain, zones
+from . import landmarks, lots, roads, terrain, zones
 from .config import ROOT, load
 from .warp import Warp
 
@@ -39,8 +39,12 @@ def write_dtm(path, blk):
 
 
 def write_splat3(path, ch):
+    """R=terrAsphalt, G=terrGravel, B=terrConcrete (read out of the engine). A is the road/coverage
+    mask -- in an RWG world it is exactly the union of R and G. Only R and G above 127 flip the
+    voxel; B's biome entry ships commented out, so concrete is paint with no block change, which is
+    what the oversized lots want."""
     a = np.zeros(ch.shape + (4,), np.uint8)
-    a[ch == 1] = [255, 0, 0, 255]; a[ch == 2] = [0, 255, 0, 255]
+    a[ch == 1] = [255, 0, 0, 255]; a[ch == 2] = [0, 255, 0, 255]; a[ch == 3] = [0, 0, 255, 255]
     Image.fromarray(a, "RGBA").save(path)
 
 
@@ -89,6 +93,8 @@ def build(shell, name, allow_loaded=False):
     blk = terrain.to_blocks(ele, cfg).astype(np.float32)
     wways = roads.to_world(roads.fetch_ways(cfg) + roads.fetch_extra(cfg), warp)
     blk, road, ch = roads.grade(blk, wways, cfg)
+    lot_px = lots.splat_mask(warp, N, cfg=cfg) & (ch == 0)   # parcels too big to be a prefab; roads win
+    ch[lot_px] = lots.SPLAT_CONCRETE
     places = landmarks.load()
     decs, warns = landmarks.place(places, landmarks.resolve(places), warp, blk, road)
     for w in warns:
@@ -97,7 +103,8 @@ def build(shell, name, allow_loaded=False):
     write_splat3(os.path.join(dst, "splat3.png"), ch)
     write_prefabs(os.path.join(dst, "prefabs.xml"), decs)
     write_spawnpoints(os.path.join(dst, "spawnpoints.xml"), spawn_along_motorway(wways, blk))
-    print(f"wrote {dst}: {len(wways)} road pieces, {road.sum()} road px, {len(decs)} landmarks")
+    print(f"wrote {dst}: {len(wways)} road pieces, {road.sum()} road px, "
+          f"{int(lot_px.sum())} painted lot px, {len(decs)} landmarks")
 
 
 if __name__ == "__main__":

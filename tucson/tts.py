@@ -37,8 +37,23 @@ import numpy as np
 
 MAGIC = b"tts\0"
 VERSION = 19
-DENSITY_AIR = 127          # sbyte.MaxValue, MarchingCubes.DensityAir
-DENSITY_TERRAIN = -128     # MarchingCubes.DensityTerrain
+# Density is NOT a solidity flag. It is a signed nudge of the terrain surface beneath a cell:
+# MarchingCubes.GetDecorationOffsetY clamps -0.0035 * (densityHere + densityBelow) to +-0.4 and
+# applies it to the top face of the terrain block below, for rendering, collision and entity
+# placement alike. The engine's own rule when copying blocks is `IsTerrain() ? -128 : +127`.
+#
+# Getting this wrong is not cosmetic. A solid non-terrain block at -128 sitting on terrain at -128
+# sums to -256, the offset clamps to +0.4, and the graded ground lifts 0.4 blocks straight through
+# whatever sits on it -- then snaps back the first time the block updates. Measured across all 1105
+# shipped POIs: of 4,195,327 non-terrain cells exactly 123 carry -128, i.e. 0.003%.
+DENSITY_AIR = 127          # sbyte.MaxValue. Correct for ANY non-terrain block, solid or not.
+DENSITY_TERRAIN = -128     # ONLY for blocks whose shape IsTerrain(), i.e. the terr* family.
+DENSITY_AUTO = 0           # let the engine decide on load
+
+
+def density_for(block_name):
+    """The engine's rule: terrain blocks get DENSITY_TERRAIN, everything else DENSITY_AIR."""
+    return DENSITY_TERRAIN if block_name.startswith("terr") else DENSITY_AIR
 
 # Paint ids from Data/Config/painting.xml. The lot palette the map uses: six concrete colours
 # (there is no indigo concrete in the game) plus black granite for the compound "mega lots" that
@@ -153,7 +168,7 @@ class Prefab:
         sx, sy, _ = self.size
         return x + y * sx + z * sx * sy
 
-    def set(self, x, y, z, type_id, rotation=0, density=DENSITY_TERRAIN, paint=None, faces=None):
+    def set(self, x, y, z, type_id, rotation=0, density=DENSITY_AIR, paint=None, faces=None):
         i = self.index(x, y, z)
         self.blocks[i] = pack_block(type_id, rotation)
         self.density[i] = density
@@ -297,9 +312,10 @@ def prefab_xml(size, y_offset=-1, tags="navonly", zoning="NavOnly", rotation_to_
                extra=()):
     """A prefab .xml carrying every property the shipped prefabs universally carry.
 
-    y_offset defaults to -1, not 0. Placement is y = terrain + YOffset + 1, and NO shipped prefab
-    uses a YOffset of 0 or above -- the range across all 1105 is -55..-1, most commonly -1. At 0 a
-    one-block slab would sit a block clear of the ground; at -1 its single layer lands on it.
+    y_offset defaults to -1, not 0. Placement is y = terrain + YOffset + 1. Of the 1105 shipped
+    POIs, 1020 declare a YOffset and NONE of them is 0 or above -- the range is -55..-1, mode -1
+    (307 files). The other 85 omit the property entirely. At 0 a one-block slab would sit a block
+    clear of the ground; at -1 its single layer lands on it.
 
     'navonly' and 'NavOnly' are real tokens from the shipped set, not invented ones. Legal Tags
     include commercial, downtown, industrial, residential, rural, oldwest, wilderness, part,
