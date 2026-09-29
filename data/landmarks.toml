@@ -3,6 +3,13 @@
 # or explicit `at = [lat, lon]` only where OSM has no usable feature. `offset = [east_blocks, north_blocks]`
 # nudges the prefab off the OSM point (e.g. off a road). `rot` = 0..3 (game prefab rotation).
 # The prefab's CENTER goes on the point; its footprint gets a flat pad.
+#
+# `real_size = [east_west_m, north_south_m]` is the REAL-WORLD footprint, used by
+# `python -m tucson.footprint` to check the prefab is the right size for the thing it stands in for
+# (a prefab block is 1 real metre to the player). It overrides the OSM bounding box, which is what
+# the validator falls back to; set it wherever OSM has no polygon or the polygon is the wrong thing
+# (a whole air base, a whole mall parcel). Measure the LOT, not just the roof -- the pad and the
+# painted ground cover the lot.
 
 # ---------- Skate Country (the reason this map exists) ----------
 [[place]]
@@ -11,6 +18,11 @@ prefab = "remnant_sports_center_01"
 at = [32.206377, -110.822252]      # 7980 E 22nd St, US Census geocoder (no OSM feature for the rink)
 offset = [0, -57]                  # SOUTH side of 22nd St (user-confirmed 2026-09-24): 4 road + 50 half-prefab + 3 apron
 rot = 0                            # custom Skate Country prefab planned (co-work with user)
+# Measured off Google Maps satellite by the user, 2026-09-28. Long axis runs north-south.
+#   building/roof  95.5 x 252.7 ft = 29 x 77 m   (perimeter 696.33 ft, area 24,126 sq ft)
+#   lot incl. lot  196.7 x 336.3 ft = 60 x 102 m (perimeter 1,066.08 ft, area 66,163 sq ft)
+# The custom prefab targets the LOT: 60 x 102 blocks, with the 29 x 77 rink building inside it.
+real_size = [60, 102]
 
 # ---------- University of Arizona ----------
 [[place]]
