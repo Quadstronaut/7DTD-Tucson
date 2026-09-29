@@ -286,11 +286,31 @@ def save(dirpath, name, prefab, names, xml=None):
     return base
 
 
-def prefab_xml(size, y_offset=0, tags="navonly", zoning="any", extra=()):
+# The seven properties every single one of the 1105 shipped POI .xml files carries, besides
+# PrefabSize and RotationToFaceNorth. Surveyed, not guessed.
+_UNIVERSAL = [("CopyAirBlocks", "False"), ("ExcludeDistantPOIMesh", "False"),
+              ("ExcludePOICulling", "False"), ("DistantPOIYOffset", "0"),
+              ("DifficultyTier", "0"), ("ShowQuestClearCount", "0"), ("TraderArea", "False")]
+
+
+def prefab_xml(size, y_offset=-1, tags="navonly", zoning="NavOnly", rotation_to_face_north=0,
+               extra=()):
+    """A prefab .xml carrying every property the shipped prefabs universally carry.
+
+    y_offset defaults to -1, not 0. Placement is y = terrain + YOffset + 1, and NO shipped prefab
+    uses a YOffset of 0 or above -- the range across all 1105 is -55..-1, most commonly -1. At 0 a
+    one-block slab would sit a block clear of the ground; at -1 its single layer lands on it.
+
+    'navonly' and 'NavOnly' are real tokens from the shipped set, not invented ones. Legal Tags
+    include commercial, downtown, industrial, residential, rural, oldwest, wilderness, part,
+    streettile, gateway; legal Zoning includes Commercial, Downtown, Industrial, Residential,
+    NoZone, NavOnly.
+    """
     rows = [f'  <property name="PrefabSize" value="{size[0]},{size[1]},{size[2]}" />',
             f'  <property name="YOffset" value="{y_offset}" />',
-            '  <property name="RotationToFaceNorth" value="0" />',
+            f'  <property name="RotationToFaceNorth" value="{rotation_to_face_north}" />',
             f'  <property name="Tags" value="{tags}" />',
             f'  <property name="Zoning" value="{zoning}" />']
+    rows += [f'  <property name="{k}" value="{v}" />' for k, v in _UNIVERSAL]
     rows += [f'  <property name="{k}" value="{v}" />' for k, v in extra]
     return '<?xml version="1.0" encoding="UTF-8"?>\n<prefab>\n' + "\n".join(rows) + "\n</prefab>\n"
