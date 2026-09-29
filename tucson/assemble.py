@@ -27,8 +27,15 @@ def copy_shell(src, dst, allow_loaded=False):
         shutil.copy2(os.path.join(src, f), os.path.join(dst, f))
 
 
+DTM_SCALE = 257           # block height = raw / 257, NOT / 256. Navezgane's shipped dtm.raw maxes at
+                          # exactly 65535 and its dtm_processed.raw at exactly 64000; 65535/257 = 255.000.
+DTM_CLAMP = 64000         # loadDTM passes _clampHeight=250, and the loader does _clampHeight *= 256.
+                          # Anything above this is flattened to 249.03 blocks, so clamp it ourselves
+                          # rather than letting the engine silently do it.
+
+
 def write_dtm(path, blk):
-    np.round(blk[::-1] * 256).clip(0, 65535).astype("<u2").tofile(path)   # flip: dtm row 0 = south
+    np.round(blk[::-1] * DTM_SCALE).clip(0, DTM_CLAMP).astype("<u2").tofile(path)   # flip: dtm row 0 = south
 
 
 def write_splat3(path, ch):

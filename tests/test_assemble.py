@@ -15,7 +15,21 @@ def test_dtm_is_south_origin(tmp_path):
     blk = np.zeros((4, 4), np.float32); blk[0, :] = 100          # row 0 = north in our grids
     p = tmp_path / "dtm.raw"; assemble.write_dtm(str(p), blk)
     d = np.fromfile(p, "<u2").reshape(4, 4)
-    assert (d[-1] == 25600).all() and (d[0] == 0).all()           # north lands in the LAST dtm row
+    assert (d[-1] == 25700).all() and (d[0] == 0).all()           # north lands in the LAST dtm row
+
+
+def test_dtm_scale_is_257_not_256():
+    """Block height is raw/257. Navezgane ships dtm.raw maxing at 65535 and dtm_processed.raw at
+    64000, and 65535/257 = 255.000 exactly -- /256 would put the whole map ~0.4% low."""
+    assert assemble.DTM_SCALE == 257
+
+
+def test_dtm_clamps_at_engine_limit(tmp_path):
+    """loadDTM clamps to 250*256 = 64000 (249.03 blocks). Clamp ourselves so a too-tall summit is
+    a visible number here rather than a silent flattening in the engine."""
+    blk = np.full((2, 2), 300.0, np.float32)                      # far above the ceiling
+    p = tmp_path / "dtm.raw"; assemble.write_dtm(str(p), blk)
+    assert (np.fromfile(p, "<u2") == assemble.DTM_CLAMP).all()
 
 def test_splat3_values(tmp_path):
     ch = np.array([[0, 1], [2, 0]], np.uint8); p = tmp_path / "s.png"

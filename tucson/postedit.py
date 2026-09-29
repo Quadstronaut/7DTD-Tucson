@@ -17,7 +17,7 @@ def _backup(p):
 
 def world_y(world_dir, x, z, N=10240):
     d = np.memmap(os.path.join(world_dir, "dtm.raw"), dtype="<u2", mode="r", shape=(N, N))
-    return d[z + N // 2, x + N // 2] / 256.0                 # row 0 = south
+    return d[z + N // 2, x + N // 2] / 257.0                 # row 0 = south; block height = raw/257
 
 
 def add_decorations(world_dir, items):
