@@ -14,9 +14,36 @@ curve = [[650.0, 35.0], [1000.0, 48.0], [2800.0, 235.0]]
 
 # Separable piecewise-linear warp. km measured from box west / box south.
 # Pairs are [real_km, world_block]; must start at [0,0] and end at [span_km, size].
+#
+# "Balanced" profile (user, 2026-09-28). The 10240 blocks per axis are zero-sum, so buying detail
+# downtown means spending it out of the mountains. Downtown goes to ~2 m/block so that real-metre
+# road widths fit: at ~100 m real street spacing that is ~50 blocks apart, leaving ~24 blocks of
+# buildable city block after a 26-block arterial. At the old 2.75 m/block it was 36 apart and only
+# 10 blocks survived, which is why the grid would have gone solid asphalt.
+#
+# The mountains pay for it at ~7 m/block. That is the floor, not a target: Catalina Hwy's
+# switchbacks are the whole point of that corridor and a 30 m hairpin radius is only ~4 blocks at
+# 7 m/block. Coarsening further smears the hairpins into a straight ramp.
+#
+#   x segment                              km   blocks  m/block
+#   Old Tucson / west wall               3.00      750     4.00
+#   Tucson Mtns -> west side            11.00     1571     7.00
+#   DOWNTOWN + UA                        5.50     2750     2.00
+#   midtown west                         2.00      400     5.00
+#   midtown -> Skate Country -> DM      10.00     2778     3.60
+#   east side -> Catalina Hwy -> Lemmon 13.68     1991     6.87
+#
+#   z segment                              km   blocks  m/block
+#   far south / San Xavier               3.00      500     6.00
+#   south side + TUS airport             7.00     1750     4.00
+#   22nd St / Skate Country              2.50     1136     2.20
+#   DOWNTOWN + UA                        3.50     1944     1.80
+#   north of UA                          6.00     1429     4.20
+#   north side -> Catalinas             14.00     2154     6.50
+#   Mt Lemmon top                        4.91     1327     3.70
 [warp]
-x = [[0.0, 0], [3.0, 1100], [14.0, 3000], [19.5, 5000], [21.5, 5350], [31.5, 7700], [45.18, 10240]]
-z = [[0.0, 0], [3.0, 650], [10.0, 2600], [12.5, 3350], [16.0, 4700], [22.0, 6050], [36.0, 8900], [40.91, 10240]]
+x = [[0.0, 0], [3.0, 750], [14.0, 2321], [19.5, 5071], [21.5, 5471], [31.5, 8249], [45.18, 10240]]
+z = [[0.0, 0], [3.0, 500], [10.0, 2250], [12.5, 3386], [16.0, 5330], [22.0, 6759], [36.0, 8913], [40.91, 10240]]
 
 [biomes]            # upper bound (m) -> color; checked in order
 bands = [[1350.0, "FFE477"], [2500.0, "004000"], [1e9, "FFFFFF"]]
